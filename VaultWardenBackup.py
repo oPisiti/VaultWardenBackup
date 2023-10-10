@@ -51,19 +51,22 @@ def main():
     directories_list = [dir for dir in directories_list if BACKUP_FILE_INIT_STRING in dir]      
     directories_list.sort(key=lambda x: os.path.getmtime(x), reverse=True)
 
-    newest_dir = directories_list[0]
-    oldest_dir = directories_list[-1]
+    # In case there are no matching backup directories
+    try:               newest_dir = directories_list[0]
+    except IndexError: newest_dir = None                    
+    try:               oldest_dir = directories_list[-1]
+    except IndexError: oldest_dir = None                
 
-    logging.info(f"Latest backup:   {re.findall('backup-.*', newest_dir)[0]}")
-    logging.info(f"Oldest backup:   {re.findall('backup-.*', oldest_dir)[0]}")
+    logging.info(f"Latest backup:   {re.findall('backup-.*', newest_dir)[0] if newest_dir is not None else 'None'}")
+    logging.info(f"Oldest backup:   {re.findall('backup-.*', oldest_dir)[0] if newest_dir is not None else 'None'}")
+
+    return
 
     # Creating the backup folder
     backup_dir = BASE_BACKUP_DIR + BACKUP_FILE_INIT_STRING + now.strftime("%Y.%m.%d-%Hh.%Mmin.%Ss") + "/"
     logging.info(f"Creating backup: {re.findall(f'{BACKUP_FILE_INIT_STRING}.*', backup_dir)[0][:-1]}")
     subprocess.run(["mkdir", "-p", backup_dir])
     logging.info("Success")
-    
-    return
 
     # sqlite database
     logging.info("Backing up sqlite3 database")
