@@ -96,17 +96,28 @@ def main():
         return
 
     # Checking if the latest directory is the same as the newly created one: https://www.tecmint.com/compare-find-difference-between-two-directories-in-linux/
-    diff = subprocess.run(["diff", "-qr", newest_dir, backup_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if diff.stdout == b'':              # Deleting new backup in case it is the same as latest backup
-        logging.info("New backup is the same as the latest backup. Deleting new backup")
-        subprocess.run(["rm", "-r", backup_dir])                       
-        logging.info("Success")
+    if newest_dir is not None:
+        diff = subprocess.run(["diff", "-qr", newest_dir, backup_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        # Deleting new backup in case it is the same as latest backup
+        if diff.stdout == b'':              
+            logging.info("New backup is the same as the latest backup. Deleting new backup")
+            del_new_backup_results = subprocess.run(["rm", "-r", backup_dir])                       
+            
+            if del_new_backup_results.returncode == 0:
+                logging.info("Success")
+            else:
+                logging.error("Failed")
 
     # Deleting oldest backup directory in case of more than MAX_NUMBER_BACKUPS backups
-    if len(directories_list) > MAX_NUMBER_BACKUPS:
+    if oldest_dir is not None and len(directories_list) > MAX_NUMBER_BACKUPS:
         logging.info(f"There are more than {MAX_NUMBER_BACKUPS} backups. Removing the oldest one: {re.findall(f'{BACKUP_FILE_INIT_STRING}.*', oldest_dir)[0]}")
-        subprocess.run(["rm", "-r", oldest_dir])
-        logging.info("Success")
+        del_too_many_results = subprocess.run(["rm", "-r", oldest_dir])
+        
+        if del_too_many_results.returncode == 0:
+            logging.info("Success")
+        else:
+            logging.error(f"Failed")
 
     logging.info("")
 
