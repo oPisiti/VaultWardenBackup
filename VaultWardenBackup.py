@@ -17,7 +17,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--data_dir",    help="Directory containing all of Vaultwarden's data", type=str)
     parser.add_argument("-b", "--backup_dir",  help="Directory to backup to", type=str)
-    parser.add_argument("-m", "--max_backups", help="The maximum number of backups in the backup directory. This WILL DELETE old backups", type=str)
+    parser.add_argument("-m", "--max_backups", help="The maximum number of backups in the backup directory. This WILL DELETE old backups", type=int)
     args = parser.parse_args()
 
     # Constants - Default values
@@ -28,8 +28,8 @@ def main():
     MAX_NUMBER_BACKUPS      = 30
 
     # Constants - Updated
-    if args.data_dir    is not None: DATA_DIR = args.data_dir
-    if args.backup_dir  is not None: BASE_BACKUP_DIR = args.backup_dir
+    if args.data_dir    is not None: DATA_DIR = args.data_dir + ("/" if args.data_dir[-1] != "/" else "")
+    if args.backup_dir  is not None: BASE_BACKUP_DIR = args.backup_dir + ("/" if args.backup_dir[-1] != "/" else "")
     if args.max_backups is not None: MAX_NUMBER_BACKUPS = args.max_backups
 
     # Setting up the logger
@@ -62,6 +62,8 @@ def main():
     logging.info(f"Creating backup: {re.findall(f'{BACKUP_FILE_INIT_STRING}.*', backup_dir)[0][:-1]}")
     subprocess.run(["mkdir", "-p", backup_dir])
     logging.info("Success")
+    
+    return
 
     # sqlite database
     logging.info("Backing up sqlite3 database")
