@@ -60,27 +60,40 @@ def main():
     logging.info(f"Latest backup:   {re.findall('backup-.*', newest_dir)[0] if newest_dir is not None else 'None'}")
     logging.info(f"Oldest backup:   {re.findall('backup-.*', oldest_dir)[0] if newest_dir is not None else 'None'}")
 
-    return
-
     # Creating the backup folder
     backup_dir = BASE_BACKUP_DIR + BACKUP_FILE_INIT_STRING + now.strftime("%Y.%m.%d-%Hh.%Mmin.%Ss") + "/"
     logging.info(f"Creating backup: {re.findall(f'{BACKUP_FILE_INIT_STRING}.*', backup_dir)[0][:-1]}")
-    subprocess.run(["mkdir", "-p", backup_dir])
-    logging.info("Success")
+    mkdir_backup_result = subprocess.run(["mkdir", "-p", backup_dir])
+    
+    if mkdir_backup_result.returncode == 0:
+        logging.info("Success")
+    else:
+        logging.error(f"Failed to create directory {backup_dir}. Aborting ...")
+        return
 
     # sqlite database
     logging.info("Backing up sqlite3 database")
     database_name = "db.sqlite3"
     database_path = DATA_DIR + database_name
-    subprocess.run(["sqlite3", database_path, f".backup {backup_dir}{database_name}"])
-    logging.info("Success")
+    db_backup_results = subprocess.run(["sqlite3", database_path, f".backup {backup_dir}{database_name}"])
+    
+    if db_backup_results.returncode == 0:
+        logging.info("Success")
+    else:
+        logging.error(f"Failed to backup database to {backup_dir}. Aborting ...")
+        return
 
     # Attachments directory
     logging.info("Backing up attachments directory")
     attachments_name = "attachments/"
     attachments_dir = DATA_DIR + attachments_name
-    subprocess.run(["cp", "-r", attachments_dir, backup_dir + attachments_name])
-    logging.info("Success")
+    attachments_backup_results = subprocess.run(["cp", "-r", attachments_dir, backup_dir + attachments_name])
+    
+    if attachments_backup_results.returncode == 0:
+        logging.info("Success")
+    else:
+        logging.error(f"Failed to backup attachments directory to {backup_dir}")
+        return
 
     # Checking if the latest directory is the same as the newly created one: https://www.tecmint.com/compare-find-difference-between-two-directories-in-linux/
     diff = subprocess.run(["diff", "-qr", newest_dir, backup_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
