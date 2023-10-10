@@ -36,6 +36,7 @@ options:
                                              This WILL DELETE old backups
 ```
 
+### Automation
 This script is meant to be called with via a crontab.
 
 In Linux:
@@ -45,7 +46,19 @@ crontab -e
 
 Add a simple command to the bottom, such as:
 ```
-33 03 * * * python3 ~/bin/vault_warden_backup.py
+33 03 * * * python3 ~/bin/vault_warden_backup.py [optional_arguments]
 ```
 
 Given that this script is located in ~/bin.
+
+It is also recommended that you back up this backup off-site with another crontab using rclone.
+
+### Customization
+Under "Constants - Default values" inside the script, the following are defined:
+- DATA_DIR = HOME_DIR + "/docker-Vaultwarden/vw-data/"
+- BASE_BACKUP_DIR     = "/Archive/Vaultwarden-backup/"
+- MAX_NUMBER_BACKUPS  = 30
+
+These values are then overridden if the script is called with any optional command line arguments.
+
+Therefore, to make the call simpler, you may change these values accordingly.
