@@ -1,22 +1,36 @@
 #!/usr/bin/python3
 
-import subprocess
+import argparse
 import glob
-import os
 import logging
+import os
 import re
+import subprocess
+
 from datetime import datetime
 from pathlib import Path
 
 
 def main():
 
-    # Constants
+    # Command line arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--data_dir",    help="Directory containing all of Vaultwarden's data", type=str)
+    parser.add_argument("-b", "--backup_dir",  help="Directory to backup to", type=str)
+    parser.add_argument("-m", "--max_backups", help="The maximum number of backups in the backup directory. This WILL DELETE old backups", type=str)
+    args = parser.parse_args()
+
+    # Constants - Default values
     HOME_DIR = str(Path.home())
     DATA_DIR = HOME_DIR + "/docker-Vaultwarden/vw-data/"
     BASE_BACKUP_DIR         = "/Archive/Vaultwarden-backup/"
     BACKUP_FILE_INIT_STRING = "backup-"
     MAX_NUMBER_BACKUPS      = 30
+
+    # Constants - Updated
+    if args.data_dir    is not None: DATA_DIR = args.data_dir
+    if args.backup_dir  is not None: BASE_BACKUP_DIR = args.backup_dir
+    if args.max_backups is not None: MAX_NUMBER_BACKUPS = args.max_backups
 
     # Setting up the logger
     logging.basicConfig(
