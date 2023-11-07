@@ -22,7 +22,7 @@ def main():
 
     # Constants - Default values
     HOME_DIR = str(Path.home())
-    DATA_DIR = HOME_DIR + "/docker-Vaultwarden/vw-data/"
+    DATA_DIR = HOME_DIR + "/docker-Containers/Vaultwarden/vw-data/"
     BASE_BACKUP_DIR         = "/Archive/Vaultwarden-backup/"
     BACKUP_FILE_INIT_STRING = "backup-"
     MAX_NUMBER_BACKUPS      = 30
