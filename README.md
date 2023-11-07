@@ -46,12 +46,23 @@ crontab -e
 
 Add a simple command to the bottom, such as:
 ```
-33 03 * * * python3 ~/bin/vault_warden_backup.py [optional_arguments]
+33 03 * * * vault_warden_backup.py [optional_arguments]
 ```
 
 Given that this script is located in ~/bin.
 
 It is also recommended that you back up this backup off-site with another crontab using rclone.
+
+### Piping
+This script returns 1 when a catastrophic errors occurs.
+
+This allows behaviors like sending a Telegram message when an error occurs:
+
+```
+vault_warden_backup.py || notify_me.py -m "Error backing up VaultWarden"
+```
+
+notify_me.py is available [here](https://github.com/oPisiti/NotifyMe)
 
 ### Customization
 Under "Constants - Default values" inside the script, the following are defined:
