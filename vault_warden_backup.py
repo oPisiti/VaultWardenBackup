@@ -6,6 +6,7 @@ import logging
 import os
 import re
 import subprocess
+import sys
 
 from datetime import datetime
 from pathlib import Path
@@ -69,7 +70,7 @@ def main():
         logging.info("Success")
     else:
         logging.error(f"Failed to create directory {backup_dir}. Aborting ...")
-        return
+        sys.exit(1)
 
     # sqlite database
     logging.info("Backing up sqlite3 database")
@@ -81,7 +82,7 @@ def main():
         logging.info("Success")
     else:
         logging.error(f"Failed to backup database to {backup_dir}. Aborting ...")
-        return
+        sys.exit(1)
 
     # Attachments directory
     logging.info("Backing up attachments directory")
@@ -93,7 +94,7 @@ def main():
         logging.info("Success")
     else:
         logging.error(f"Failed to backup attachments directory to {backup_dir}")
-        return
+        sys.exit(1)
 
     # Checking if the latest directory is the same as the newly created one: https://www.tecmint.com/compare-find-difference-between-two-directories-in-linux/
     if newest_dir is not None:
